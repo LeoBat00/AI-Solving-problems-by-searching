@@ -1,0 +1,56 @@
+# Ignore environment folders
+IA_env/
+env/
+venv/
+
+# Ignore Python bytecode
+__pycache__/
+*.py[cod]
+
+# Ignore Jupyter Notebook checkpoints (caso use notebooks)
+.ipynb_checkpoints/
+
+# Ignore logs
+*.log
+
+# Ignore Python virtual environment configuration files
+*.env
+*.venv
+
+# Ignore system files (Windows, macOS, etc.)
+.DS_Store
+Thumbs.db
+
+# Ignore IDE files (opcional, caso use VSCode ou PyCharm)
+.vscode/
+.idea/
+*.sublime-workspace
+*.sublime-project
+
+# Ignore compiled Python files
+*.pyo
+*.pyd
+
+# Ignore any database files
+*.sqlite3
+
+# Ignore result files
+results/
+
+# Ignore images or temporary files
+*.png
+*.jpg
+*.jpeg
+*.gif
+*.bmp
+*.svg
+*.webp
+*.mp4
+*.avi
+*.mkv
+
+# Ignore test coverage
+htmlcov/
+.coverage
+*.cover
+*.py,cover

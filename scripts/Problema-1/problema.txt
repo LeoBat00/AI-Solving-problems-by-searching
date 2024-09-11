@@ -1,0 +1,11 @@
+A primeira parte trata-se da utilização dos algoritmos: Hill Climbing; Local Random Search (LRS) e Global
+Random Search (GRS). 
+Tais algoritmos devem ser aplicados para solucionar problemas de dominio continuo
+com espaço de estados infinito.
+
+        ##  A busca pode ser vista como uma metodologia de resolução de problemas que toma como base a
+        sua formulação em um espaço de estados e um elemento neste espaço é visto como uma solução
+        para o problema.
+            Tendo em vista que nem toda solução tem a mesma qualidade, busca-se encontrar a ótima para o
+        problema.##
+

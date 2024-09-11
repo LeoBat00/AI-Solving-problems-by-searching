@@ -1,0 +1,5 @@
+• É um tipo de algoritmo de busca heurística local.
+• A partir de um estado inicial, escolhe um sucessor melhor ("subir sempre"até) encontrar um pico.
+• Para problemas convexos, este algoritmo encontra valores de ótimo global.
+• Caso o problema seja não-convexo (multimodal), pode encontrar apenas o ótimo local.
+• O algoritmo é baseado nos seguintes passos:
