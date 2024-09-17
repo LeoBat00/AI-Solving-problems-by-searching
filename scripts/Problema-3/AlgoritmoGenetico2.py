@@ -4,94 +4,93 @@ import random
 # Parâmetros
 A = 10
 p = 20  # Número de dimensões do problema
-pop_size = 100  # Tamanho da população
-generations = 100  # Número de gerações
-mutation_rate = 0.01  # Taxa de mutação
-recombination_rate = 0.85
-lower_bound = -10  # Limite inferior para as variáveis contínuas
-upper_bound = 10  # Limite superior para as variáveis contínuas
+tam_populacao = 100  # Tamanho da população
+geracoes = 100  # Número de gerações
+taxa_mutacao = 0.01  # Taxa de mutação
+taxa_recombinacao = 0.85
+limite_inferior = -10  # Limite inferior para as variáveis contínuas
+limite_superior = 10  # Limite superior para as variáveis contínuas
 
 # Função de Rastrigin
 def rastrigin(x):
     return A * p + sum([(xi**2 - A * np.cos(2 * np.pi * xi)) for xi in x])
 
 # Função de aptidão: rastrigin(x) + 1
-def fitness(individual):
-    return rastrigin(individual) + 1
+def fitness(individuo):
+    return rastrigin(individuo) + 1
 
 # Inicializando a população aleatoriamente (com números flutuantes entre os limites)
-def initialize_population(pop_size, p, lower_bound, upper_bound):
-    return np.random.uniform(low=lower_bound, high=upper_bound, size=(pop_size, p))
+def inicializar_populacao(tam_populacao, p, limite_inferior, limite_superior):
+    return np.random.uniform(low=limite_inferior, high=limite_superior, size=(tam_populacao, p))
 
 # Seleção por torneio
-def tournament_selection(population, fitnesses, tournament_size=3):
-    tournament_indices = np.random.choice(len(population), tournament_size, replace=False)
-    tournament_fitnesses = [fitnesses[i] for i in tournament_indices]
-    winner_index = tournament_indices[np.argmin(tournament_fitnesses)]
-    return population[winner_index]
+def selecao_torneio(populacao, aptidoes, tam_torneio=3):
+    indices_torneio = np.random.choice(len(populacao), tam_torneio, replace=False)
+    aptidoes_torneio = [aptidoes[i] for i in indices_torneio]
+    indice_vencedor = indices_torneio[np.argmin(aptidoes_torneio)]
+    return populacao[indice_vencedor]
 
 # Recombinação via SBX (Simulated Binary Crossover)
-def sbx_crossover(parent1, parent2, eta=2):
-    if random.random() < recombination_rate:
-        child1, child2 = np.zeros_like(parent1), np.zeros_like(parent2)
-        for i in range(len(parent1)):
+def recombinacao_sbx(pai1, pai2, eta=2):
+    if random.random() < taxa_recombinacao:
+        filho1, filho2 = np.zeros_like(pai1), np.zeros_like(pai2)
+        for i in range(len(pai1)):
             u = random.random()
             if u <= 0.5:
                 beta = (2 * u)**(1 / (eta + 1))
             else:
                 beta = (1 / (2 * (1 - u)))**(1 / (eta + 1))
-            child1[i] = 0.5 * ((1 + beta) * parent1[i] + (1 - beta) * parent2[i])
-            child2[i] = 0.5 * ((1 - beta) * parent1[i] + (1 + beta) * parent2[i])
-        return child1, child2
-    return parent1, parent2
+            filho1[i] = 0.5 * ((1 + beta) * pai1[i] + (1 - beta) * pai2[i])
+            filho2[i] = 0.5 * ((1 - beta) * pai1[i] + (1 + beta) * pai2[i])
+        return filho1, filho2
+    return pai1, pai2
 
 # Mutação Gaussiana
-def gaussian_mutation(individual, mutation_rate, lower_bound, upper_bound):
-    for i in range(len(individual)):
-        if random.random() < mutation_rate:
-            mutation_value = np.random.normal(0, 1)  # Média 0 e desvio padrão 1
-            individual[i] += mutation_value
+def mutacao_gaussiana(individuo, taxa_mutacao, limite_inferior, limite_superior):
+    for i in range(len(individuo)):
+        if random.random() < taxa_mutacao:
+            valor_mutacao = np.random.normal(0, 1)  # Média 0 e desvio padrão 1
+            individuo[i] += valor_mutacao
             # Limita os valores ao intervalo permitido
-            individual[i] = np.clip(individual[i], lower_bound, upper_bound)
-    return individual
+            individuo[i] = np.clip(individuo[i], limite_inferior, limite_superior)
+    return individuo
 
 # Algoritmo genético
-def genetic_algorithm():
-    population = initialize_population(pop_size, p, lower_bound, upper_bound)
-    best_fitnesses = []
+def algoritmo_genetico():
+    populacao = inicializar_populacao(tam_populacao, p, limite_inferior, limite_superior)
+    melhores_aptidoes = []
     
-    for generation in range(generations):
-        fitnesses = [fitness(individual) for individual in population]
-        next_generation = []
+    for geracao in range(geracoes):
+        aptidoes = [fitness(individuo) for individuo in populacao]
+        proxima_geracao = []
 
         # Seleção, recombinação e mutação
-        for _ in range(pop_size // 2):
-            parent1 = tournament_selection(population, fitnesses)
-            parent2 = tournament_selection(population, fitnesses)
-            child1, child2 = sbx_crossover(parent1, parent2)
-            next_generation.append(gaussian_mutation(child1, mutation_rate, lower_bound, upper_bound))
-            next_generation.append(gaussian_mutation(child2, mutation_rate, lower_bound, upper_bound))
+        for _ in range(tam_populacao // 2):
+            pai1 = selecao_torneio(populacao, aptidoes)
+            pai2 = selecao_torneio(populacao, aptidoes)
+            filho1, filho2 = recombinacao_sbx(pai1, pai2)
+            proxima_geracao.append(mutacao_gaussiana(filho1, taxa_mutacao, limite_inferior, limite_superior))
+            proxima_geracao.append(mutacao_gaussiana(filho2, taxa_mutacao, limite_inferior, limite_superior))
         
-        population = np.array(next_generation)
-        
+        populacao = np.array(proxima_geracao)
         # Armazena a melhor aptidão de cada geração
-        best_fitnesses.append(min(fitnesses))
+        melhores_aptidoes.append(min(aptidoes))
 
-    return best_fitnesses
+    return melhores_aptidoes
 
 # Executando 100 rodadas
-all_fitnesses = [] 
+todas_aptidoes = [] 
 for _ in range(100):
-    best_fitnesses = genetic_algorithm()
-    all_fitnesses.append(min(best_fitnesses))
+    melhores_aptidoes = algoritmo_genetico()
+    todas_aptidoes.append(min(melhores_aptidoes))
 
 # Analisando os resultados
-best_fitness = min(all_fitnesses)
-worst_fitness = max(all_fitnesses)
-mean_fitness = np.mean(all_fitnesses)
-std_fitness = np.std(all_fitnesses)
+melhor_aptidao = min(todas_aptidoes)
+pior_aptidao = max(todas_aptidoes)
+media_aptidao = np.mean(todas_aptidoes)
+desvio_padrao_aptidao = np.std(todas_aptidoes)
 
-print(f"Melhor aptidão: {best_fitness}")
-print(f"Pior aptidão: {worst_fitness}")
-print(f"Média da aptidão: {mean_fitness}")
-print(f"Desvio padrão da aptidão: {std_fitness}")
+print(f"Melhor aptidão: {melhor_aptidao}")
+print(f"Pior aptidão: {pior_aptidao}")
+print(f"Média da aptidão: {media_aptidao}")
+print(f"Desvio padrão da aptidão: {desvio_padrao_aptidao}")
