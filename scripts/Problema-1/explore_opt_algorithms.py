@@ -8,16 +8,24 @@ epsilon = 0.1
 sigma = 0.1
 max_it = 10000
 max_viz = 20
-R = 10
-generate_plots = False
+R = 100
+generate_plots = True
+objective_type = 'min'  # Escolha entre 'min' ou 'max'
 
-bounds = np.array([[-2, 4], [-2, 5]])
+bounds = np.array([[-100, 100], [-100, 100]])
 x1_inferior, x2_inferior = bounds[:, 0]
 x1_superior, x2_superior = bounds[:, 1]
 
 # Função objetivo
 def f(x1, x2):
-    return np.exp(-(x1**2 + x2**2)) + 2 * np.exp(-((x1-1.7)**2 + (x2-1.7)**2))
+    return x1**2 + x2**2 
+
+
+def compare(f_new, f_opt, objective_type):
+    if objective_type == 'max':
+        return f_new > f_opt
+    elif objective_type == 'min':
+        return f_new < f_opt
 
 # Perturbação para Hill Climbing
 def hill_climbing_perturb(x, epsilon, bounds):
@@ -40,7 +48,7 @@ def hill_climbing(epsilon, max_it, max_viz, bounds, generate_plots):
     x_history, f_history = [x_opt.copy()], [f_opt]
     
     if generate_plots:
-        fig = plt.figure(figsize=(21, 6))
+        fig = plt.figure(figsize=(6, 6))
         ax1 = fig.add_subplot(111, projection='3d')
         x1_vals = np.linspace(x1_inferior, x1_superior, 400)
         x2_vals = np.linspace(x2_inferior, x2_superior, 400)
@@ -60,7 +68,7 @@ def hill_climbing(epsilon, max_it, max_viz, bounds, generate_plots):
         for _ in range(max_viz):
             x_cand = hill_climbing_perturb(x_opt, epsilon, bounds)
             f_cand = f(x_cand[0], x_cand[1])
-            if f_cand > f_opt:
+            if compare(f_cand, f_opt, objective_type):
                 x_opt = x_cand
                 f_opt = f_cand
                 x_history.append(x_opt.copy())
@@ -94,7 +102,7 @@ def local_random_search(sigma, max_it, bounds, generate_plots):
     x_history, f_history = [x_opt.copy()], [f_opt]
     
     if generate_plots:
-        fig = plt.figure(figsize=(21, 6))
+        fig = plt.figure(figsize=(6, 6))
         ax2 = fig.add_subplot(111, projection='3d')
         x1_vals = np.linspace(x1_inferior, x1_superior, 400)
         x2_vals = np.linspace(x2_inferior, x2_superior, 400)
@@ -112,7 +120,7 @@ def local_random_search(sigma, max_it, bounds, generate_plots):
     for it in range(max_it):
         x_cand = lrs_perturb(x_opt, sigma, bounds)
         f_cand = f(x_cand[0], x_cand[1])
-        if f_cand > f_opt:
+        if compare(f_cand, f_opt, objective_type):
             x_opt = x_cand
             f_opt = f_cand
             x_history.append(x_opt.copy())
@@ -142,7 +150,7 @@ def global_random_search(max_it, bounds, generate_plots):
     x_history, f_history = [x_opt.copy()], [f_opt]
     
     if generate_plots:
-        fig = plt.figure(figsize=(21, 6))
+        fig = plt.figure(figsize=(6, 6))
         ax3 = fig.add_subplot(111, projection='3d')
         x1_vals = np.linspace(x1_inferior, x1_superior, 400)
         x2_vals = np.linspace(x2_inferior, x2_superior, 400)
@@ -160,7 +168,7 @@ def global_random_search(max_it, bounds, generate_plots):
     for it in range(max_it):
         x_cand = grs_perturb(bounds)
         f_cand = f(x_cand[0], x_cand[1])
-        if f_cand > f_opt:
+        if compare(f_cand, f_opt, objective_type):
             x_opt = x_cand
             f_opt = f_cand
             x_history.append(x_opt.copy())
