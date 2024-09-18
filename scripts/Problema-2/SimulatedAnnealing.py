@@ -50,13 +50,15 @@ def perturb(rainhas, sigma=0.2):
     return nova_solucao
 
 def resfriar(T, metodo, iteracao, iter_max):
+    T_0 = 1000;
+    T_inf = 100;
     """Define as diferentes formas de resfriamento da temperatura."""
     if metodo == 'escalonamento 1':
-        return T * 0.98  # Decaimento de 2% a cada iteração
+        return T * 0.99  # Decaimento de 2% a cada iteração
     elif metodo == 'escalonamento 2':
-        return T / (1 + 0.02 * np.sqrt(T))  # Resfriamento adaptativo baseado em T
+        return T / (1 + 0.99 * np.sqrt(T))  # Resfriamento adaptativo baseado em T
     elif metodo == 'escalonamento 3':
-        delta_T = (T - 1e-3) / iter_max  # Resfriamento linear até uma temperatura muito baixa
+        delta_T = (T_0 - T_inf) / iter_max
         return T - delta_T
     return T
 
@@ -98,7 +100,7 @@ def tempera_simulada(metodo_resfriamento, solucoes_distintas):
 
 def executar_temperas():
     """Executa a têmpera simulada até encontrar as 92 soluções distintas."""
-    metodos = ['escalonamento 1', 'escalonamento 2', 'escalonamento 3']
+    metodos = ['escalonamento 3']
     resultados = {}
 
     for metodo in metodos:
